@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Survei Titik PJU Baru</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+<style id="pg">@page{size:A4 landscape;margin:8mm}</style>
+<style>
+:root{--n:#0f2a43;--a:#f5a524;--bg:#f4f6f9;--b:#dde3ea;--t:#1c2733;--m:#6b7785}
+*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{margin:0;font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--t);background:var(--bg)}
+#app{display:grid;grid-template:52px 1fr/350px 1fr;height:100vh;height:100dvh}
+header{grid-column:1/3;background:var(--n);color:#fff;display:flex;align-items:center;gap:8px;padding:0 14px;overflow-x:auto;white-space:nowrap}
+header h1{font-size:16px;margin:0;display:flex;align-items:center;gap:8px}
+header h1 i{font-style:normal;background:var(--a);border-radius:8px;padding:2px 6px}
+#pn{opacity:.7;font-size:12px;font-weight:400}.sp{flex:1}
+button,select,input,textarea{font:inherit}
+button{border:1px solid var(--b);background:#fff;color:var(--t);border-radius:8px;padding:7px 11px;cursor:pointer}
+header button,header select{background:#ffffff1a;color:#fff;border-color:#ffffff40;padding:6px 10px;width:auto}
+header option{color:#000}
+button.pri{background:var(--a);border-color:var(--a);color:var(--n);font-weight:700}
+button.on{background:var(--n);color:#fff;border-color:var(--n)}.dg{color:#c0262d}
+.chip{font-size:12px;padding:3px 10px;border-radius:99px;background:#ffffff26}.chip.ok{background:#16a34a}.chip.err{background:#c0262d}
+#side{grid-row:2;grid-column:1;background:#fff;border-right:1px solid var(--b);display:flex;flex-direction:column;gap:10px;padding:12px;overflow:auto}
+#map{grid-row:2;grid-column:2;min-height:0;background:#cfd8e3}
+.tools{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:6px}.tools button{padding:8px 4px;font-size:13px}
+input,select,textarea{width:100%;border:1px solid var(--b);border-radius:8px;padding:7px 9px;background:#fff;color:var(--t)}
+:focus-visible{outline:2px solid var(--a)}
+#fm{border:1px solid var(--b);border-radius:12px;padding:10px;background:var(--bg)}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:8px}.w{grid-column:1/3}
+label{display:block;font-size:12px;color:var(--m);font-weight:600}
+.lh{font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.hint,small{color:var(--m);font-size:12px}
+.it{display:flex;gap:9px;align-items:center;padding:7px 8px;border-radius:10px;cursor:pointer}.it:hover,.it.on{background:#fff2d6}
+.it small{display:block}.bd{min-width:26px;height:26px;border-radius:50%;background:var(--a);color:var(--n);display:grid;place-items:center;font-weight:700;font-size:12px}
+#tip{position:fixed;z-index:999;top:62px;left:50%;transform:translateX(-50%);background:var(--n);color:#fff;padding:6px 14px;border-radius:99px;font-size:13px;display:none;pointer-events:none}
+.adding #tip{display:block}.adding .leaflet-container{cursor:crosshair}
+.pin{width:30px;height:30px;background:var(--a);border:2.5px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 6px #0006;display:grid;place-items:center}
+.pin b{transform:rotate(45deg);color:var(--n);font:700 12px system-ui}.pin.on{box-shadow:0 0 0 3px #fff,0 0 0 6px var(--n)}
+.lg,.na{background:#fffffff0;padding:7px 10px;border-radius:8px;font-size:12px;box-shadow:0 1px 5px #0004;line-height:1.7;color:var(--t)}
+.lg i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px}.na{padding:4px 8px;text-align:center}
+dialog{border:0;border-radius:14px;padding:18px;width:min(430px,92vw);box-shadow:0 20px 60px #0005}
+dialog label{margin-bottom:10px}dialog h3{margin:0 0 12px}dialog menu{display:flex;justify-content:flex-end;gap:8px;margin:0;padding:0}
+#ph,#pt{display:none}#pt h2{font-size:15px;color:var(--n);margin:0 0 6px}
+#tb{width:100%;border-collapse:collapse;font-size:9.5px}#tb th,#tb td{border:1px solid #999;padding:3px 4px;text-align:left;vertical-align:top}#tb th{background:#e8eef5}#tb thead{display:table-header-group}#tb tr{break-inside:avoid}
+.pr{background:#fff}
+.pr header,.pr #side,.pr #tip,.pr .leaflet-control-zoom,.pr .leaflet-control-layers{display:none!important}
+.pr #app{display:block;height:auto}
+.pr #ph{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid var(--n);padding-bottom:5px;margin-bottom:6px}
+.pr #ph h1{margin:0;font-size:20px;color:var(--n)}.pr #ph p{margin:2px 0 0;font-size:11px;color:#444}
+.pr #map{width:var(--mw);height:var(--mh);border:1px solid #333}
+.pr #pt{display:block;break-before:page}
+@media(max-width:820px){#app{grid-template:52px 48vh 1fr/1fr}header{grid-column:1}#map{grid-row:2;grid-column:1}#side{grid-row:3;border:0}}
+</style></head><body>
+<div id="tip">Klik peta untuk menaruh titik PJU</div>
+<div id="app">
+<header><h1><i>💡</i>Survei Titik PJU <span id="pn"></span></h1><span class="sp"></span><span id="stt" class="chip"></span>
+<select id="pp"><option value="A4 landscape|281|168">A4 Landscape</option><option value="A4 portrait|194|252">A4 Portrait</option><option value="A3 landscape|404|258">A3 Landscape</option></select>
+<button id="bPrint" class="pri">🖨 Cetak</button><button id="bSet">⚙ Pengaturan</button></header>
+<aside id="side">
+<div class="tools"><button id="bAdd" class="pri">＋ Tambah titik</button><button id="bGps">📍 Saya</button><button id="bPin">📌 Di GPS</button></div>
+<input id="q" placeholder="Cari alamat / tempat lalu Enter">
+<div id="fm"></div>
+<div class="lh"><span>Daftar titik</span><small id="cnt"></small></div>
+<div id="ls"></div>
+</aside>
+<div id="ph"><h1 id="ph1"></h1></div>
+<div id="map"></div>
+<div id="pt"><h2>Daftar Titik PJU</h2><table id="tb"></table></div>
+</div>
+<dialog id="dg"><form method="dialog"><h3>Pengaturan</h3>
+<label>Nama proyek / lokasi survei<input id="sPj"></label>
+<label>URL Web App Google Apps Script (Drive)<input id="sUrl" placeholder="https://script.google.com/macros/s/…/exec"></label>
+<p class="hint">Kosongkan bila data cukup disimpan di perangkat. Panduan pasang ada di file Code.gs.</p>
+<menu><button value="x">Batal</button><button id="ok" class="pri" value="ok">Simpan</button></menu></form></dialog>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const $=i=>document.getElementById(i),K='pjuSurvey1';
+const FIELDS=[['jalan','Nama jalan / lokasi','txt'],['cat','Catatan','area']];
+const HEAD=['No','Longitude','Latitude',...FIELDS.map(f=>f[1])];
+let S={proj:'',by:'',url:'',ts:0,pts:[]},sel=-1,add=0,gpsAdd=0,q=1,me,tm,pre;
+try{Object.assign(S,JSON.parse(localStorage[K]))}catch(_){}
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rows=()=>S.pts.map((p,i)=>[i+1,p.lng,p.lat,...FIELDS.map(f=>p[f[0]]??'')]);
+const st=(t,c='')=>{$('stt').textContent=t;$('stt').className='chip '+c};
+const persist=()=>localStorage[K]=JSON.stringify(S);
+const bounds=()=>L.latLngBounds(S.pts.map(p=>[p.lat,p.lng])),fit=()=>S.pts.length&&map.fitBounds(bounds().pad(.2),{maxZoom:18,animate:false});
+
+/* ---- Peta ---- */
+const map=L.map('map',{maxZoom:19}).setView([-2.5,118],5);
+const esri=n=>L.tileLayer(`https://server.arcgisonline.com/ArcGIS/rest/services/${n}/MapServer/tile/{z}/{y}/{x}`,{maxZoom:19,attribution:'Tiles © Esri'});
+const bl={'Peta Jalan':esri('World_Street_Map'),'Satelit + Jalan':L.layerGroup([esri('World_Imagery'),esri('Reference/World_Transportation')]),'Satelit':esri('World_Imagery'),
+'Terang':L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd',attribution:'© OpenStreetMap © CARTO'})};
+bl['Peta Jalan'].addTo(map);L.control.layers(bl).addTo(map);L.control.scale({imperial:false}).addTo(map);
+const G=L.layerGroup().addTo(map);
+const na=L.control({position:'topright'});na.onAdd=()=>{const d=L.DomUtil.create('div','na');d.innerHTML='<svg width="30" height="40" viewBox="0 0 34 44"><path d="M17 2 29 34 17 27 5 34Z" fill="#0f2a43"/><text x="17" y="43" text-anchor="middle" font-size="11" font-weight="700">U</text></svg>';return d};na.addTo(map);
+
+/* ---- Titik ---- */
+const ic=(p,i)=>L.divIcon({className:'',iconSize:[30,36],iconAnchor:[15,36],html:`<div class="pin${i==sel?' on':''}"><b>${i+1}</b></div>`});
+function draw(){G.clearLayers();S.pts.forEach((p,i)=>L.marker([p.lat,p.lng],{draggable:true,icon:ic(p,i),zIndexOffset:i==sel?1000:0}).addTo(G)
+.on('click',()=>pick(i)).on('dragend',e=>{const c=e.target.getLatLng();p.lat=+c.lat.toFixed(6);p.lng=+c.lng.toFixed(6);save();setTimeout(()=>pick(i))}));ls()}
+function ls(){$('cnt').textContent=S.pts.length+' titik';$('ls').innerHTML=S.pts.map((p,i)=>`<div class="it${i==sel?' on':''}" data-i="${i}"><span class="bd">${i+1}</span><div><b>${esc(p.jalan)||'(tanpa nama)'}</b><small>${p.lng}, ${p.lat}</small></div></div>`).join('')||'<span class="hint">Belum ada titik.</span>'}
+function fm(){const p=S.pts[sel],el=$('fm');if(!p){el.innerHTML='<span class="hint">Aktifkan “＋ Tambah titik”, lalu klik peta untuk menandai lokasi PJU. Klik penanda atau daftar untuk mengedit; geser penanda untuk memindah.</span>';return}
+el.innerHTML=`<div class="lh" style="margin-bottom:8px"><span>No. ${sel+1}</span><a target="_blank" rel="noopener" href="https://www.google.com/maps?q=${p.lat},${p.lng}">Buka di Google Maps</a></div><div class="g"><label>Longitude<input value="${p.lng}" readonly></label><label>Latitude<input value="${p.lat}" readonly></label>`
++FIELDS.map(([k,l,t,o])=>`<label class="${t=='txt'||t=='area'?'w':''}">${l}`+(t=='sel'?`<select data-k="${k}">${o.map(v=>`<option${v==p[k]?' selected':''}>${v}</option>`).join('')}</select>`:t=='area'?`<textarea data-k="${k}" rows="2">${esc(p[k])}</textarea>`:`<input data-k="${k}" type="${t=='num'?'number':'text'}" inputmode="${t=='num'?'decimal':'text'}" value="${esc(p[k])}">`)+'</label>').join('')
++`<button class="dg" data-a="del">Hapus titik</button><button data-a="ok">Selesai</button></div>`}
+function pick(i){sel=i;draw();fm()}
+function addPt(ll){const v=S.pts.at(-1)||{},p={id:Date.now().toString(36),lat:+ll.lat.toFixed(6),lng:+ll.lng.toFixed(6),by:S.by,t:new Date().toISOString()};FIELDS.forEach(([k,,t,o])=>p[k]=t=='sel'?v[k]||o[0]:'');S.pts.push(p);save();pick(S.pts.length-1)}
+$('fm').oninput=e=>{const k=e.target.dataset.k;if(!k||sel<0)return;S.pts[sel][k]=e.target.value;save();if(k=='jenis')draw();else ls()};
+$('fm').onclick=e=>{const a=e.target.dataset.a;if(a=='del'&&confirm('Hapus titik ini?')){S.pts.splice(sel,1);sel=-1;save();draw();fm()}if(a=='ok'){sel=-1;draw();fm()}};
+$('ls').onclick=e=>{const d=e.target.closest('.it');if(d){const i=+d.dataset.i;map.flyTo([S.pts[i].lat,S.pts[i].lng],Math.max(map.getZoom(),17));pick(i)}};
+map.on('click',e=>{if(add)addPt(e.latlng)});
+$('bAdd').onclick=()=>{add=!add;document.body.classList.toggle('adding',!!add);$('bAdd').classList.toggle('on',!!add);$('bAdd').textContent=add?'■ Selesai tambah':'＋ Tambah titik'};
+
+/* ---- GPS & pencarian ---- */
+const loc=a=>{q=0;gpsAdd=a;map.locate({setView:true,maxZoom:19,enableHighAccuracy:true})};
+$('bGps').onclick=()=>loc(0);$('bPin').onclick=()=>loc(1);
+map.on('locationfound',e=>{me&&me.remove();me=L.circleMarker(e.latlng,{radius:8,color:'#fff',weight:3,fillColor:'#1d4ed8',fillOpacity:1}).addTo(map);if(gpsAdd){gpsAdd=0;addPt(e.latlng)}})
+.on('locationerror',()=>{if(!q)alert('Lokasi GPS tidak tersedia. Pastikan izin lokasi aktif dan halaman dibuka lewat HTTPS.');q=0});
+$('q').onkeydown=async e=>{if(e.key!='Enter')return;try{const r=await(await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(e.target.value))).json();r[0]?map.flyTo([r[0].lat,r[0].lon],17):alert('Tempat tidak ditemukan')}catch(_){alert('Pencarian gagal')}};
+
+/* ---- Simpan: perangkat + Google Drive ---- */
+function save(){S.ts=Date.now();persist();st(S.url?'Menunggu sinkron…':'Tersimpan di perangkat');clearTimeout(tm);if(S.url)tm=setTimeout(push,1200)}
+async function push(){if(!S.url)return;st('Menyinkronkan…');try{await fetch(S.url,{method:'POST',body:JSON.stringify({ts:S.ts,proj:S.proj,by:S.by,pts:S.pts,head:HEAD,rows:rows()})});st('Tersimpan di Drive ✓','ok')}catch(e){st('Gagal sinkron (data aman di perangkat)','err')}}
+async function pull(){if(!S.url)return;st('Memuat dari Drive…');try{const d=await(await fetch(S.url)).json();if(d.ts>S.ts){Object.assign(S,{ts:d.ts,proj:d.proj||'',by:d.by||'',pts:d.pts||[]});persist();$('pn').textContent=S.proj;sel=-1;draw();fm();fit();st('Dimuat dari Drive ✓','ok')}else push()}catch(e){st('Drive tidak terhubung','err')}}
+$('bSet').onclick=()=>{$('sPj').value=S.proj;$('sUrl').value=S.url;$('dg').showModal()};
+$('ok').onclick=()=>{S.proj=$('sPj').value;S.url=$('sUrl').value.trim();$('pn').textContent=S.proj;persist();st(S.url?'Drive diatur':'Tersimpan di perangkat');pull()};
+
+/* ---- Cetak ---- */
+function layout(){const [sz,w,h]=$('pp').value.split('|'),css=document.documentElement.style;$('pg').textContent=`@page{size:${sz};margin:8mm}`;css.setProperty('--mw',w+'mm');css.setProperty('--mh',h+'mm');
+$('ph1').textContent=S.proj||'Survei Titik PJU Baru';
+$('tb').innerHTML='<thead><tr>'+HEAD.map(x=>`<th>${esc(x)}</th>`).join('')+'</tr></thead><tbody>'+rows().map(r=>'<tr>'+r.map(v=>`<td>${esc(v)}</td>`).join('')+'</tr>').join('')+'</tbody>';
+pre=[map.getCenter(),map.getZoom()];sel=-1;document.body.classList.add('pr');draw();fm();map.invalidateSize();fit()}
+function restore(){if(!document.body.classList.contains('pr'))return;document.body.classList.remove('pr');map.invalidateSize();pre&&map.setView(pre[0],pre[1],{animate:false});draw()}
+$('bPrint').onclick=()=>{layout();st('Menyiapkan peta untuk cetak…');setTimeout(()=>{print();st(S.url?'Tersimpan di Drive ✓':'Tersimpan di perangkat')},2000)};
+addEventListener('beforeprint',()=>{document.body.classList.contains('pr')||layout()});addEventListener('afterprint',restore);
+
+/* ---- Mulai ---- */
+$('pn').textContent=S.proj;st(S.url?'Drive terhubung':'Tersimpan di perangkat');draw();fm();
+S.pts.length?fit():map.locate({setView:true,maxZoom:16});pull();
+</script></body></html>
