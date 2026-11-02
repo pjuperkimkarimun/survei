@@ -33,14 +33,21 @@ label{display:block;font-size:12px;color:var(--m);font-weight:600}
 .it small{display:block}.bd{min-width:26px;height:26px;border-radius:50%;background:var(--a);color:var(--n);display:grid;place-items:center;font-weight:700;font-size:12px}
 #tip{position:fixed;z-index:999;top:62px;left:50%;transform:translateX(-50%);background:var(--n);color:#fff;padding:6px 14px;border-radius:99px;font-size:13px;display:none;pointer-events:none}
 .adding #tip{display:block}.adding .leaflet-container{cursor:crosshair}
-.pin{width:30px;height:30px;background:var(--a);border:2.5px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 6px #0006;display:grid;place-items:center}
-.pin b{transform:rotate(45deg);color:var(--n);font:700 12px system-ui}.pin.on{box-shadow:0 0 0 3px #fff,0 0 0 6px var(--n)}
+.pin{width:30px;height:30px;background:var(--c,var(--a));border:2.5px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 6px #0006;display:grid;place-items:center}
+.pin b{transform:rotate(45deg);color:var(--x,var(--n));font:700 12px system-ui}.pin.on{box-shadow:0 0 0 3px #fff,0 0 0 6px var(--n)}
 .lg,.na{background:#fffffff0;padding:7px 10px;border-radius:8px;font-size:12px;box-shadow:0 1px 5px #0004;line-height:1.7;color:var(--t)}
 .lg i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px}.na{padding:4px 8px;text-align:center}
 dialog{border:0;border-radius:14px;padding:18px;width:min(430px,92vw);box-shadow:0 20px 60px #0005}
 dialog label{margin-bottom:10px}dialog h3{margin:0 0 12px}dialog menu{display:flex;justify-content:flex-end;gap:8px;margin:0;padding:0}
 #ph,#pt{display:none}#pt h2{font-size:15px;color:var(--n);margin:0 0 6px}
 #tb{width:100%;border-collapse:collapse;font-size:9.5px}#tb th,#tb td{border:1px solid #999;padding:3px 4px;text-align:left;vertical-align:top}#tb th{background:#e8eef5}#tb thead{display:table-header-group}#tb tr{break-inside:avoid}
+.pin.sq{border-radius:6px}
+.cl{background:#fff;border:1px solid #888;border-radius:10px;padding:0 6px;font:700 11px system-ui;color:#111;box-shadow:none}.cl:before{display:none}
+.kb{display:inline-block;width:24px;height:0;border-top:4px solid #dc2626;vertical-align:middle;margin-right:6px}.kb.lama{border-top:3px dashed #1d4ed8}
+.it button{margin-left:auto;padding:2px 8px;border-radius:6px}
+#bX{display:none;position:fixed;top:12px;left:12px;z-index:1000;background:var(--n);color:#fff}
+.pres #bX{display:block}.pres header,.pres #side{display:none}.pres #app{grid-template:1fr/1fr}.pres #map{grid-row:1;grid-column:1}
+#tc{width:100%;border-collapse:collapse;font-size:9.5px}#tc th,#tc td{border:1px solid #999;padding:3px 4px;text-align:left}#tc th{background:#e8eef5}
 .pr{background:#fff}
 .pr header,.pr #side,.pr #tip,.pr .leaflet-control-zoom,.pr .leaflet-control-layers{display:none!important}
 .pr #app{display:block;height:auto}
@@ -51,20 +58,24 @@ dialog label{margin-bottom:10px}dialog h3{margin:0 0 12px}dialog menu{display:fl
 @media(max-width:820px){#app{grid-template:52px 48vh 1fr/1fr}header{grid-column:1}#map{grid-row:2;grid-column:1}#side{grid-row:3;border:0}}
 </style></head><body>
 <div id="tip">Klik peta untuk menaruh titik PJU</div>
+<button id="bX">✕ Keluar presentasi</button>
 <div id="app">
 <header><h1><i>💡</i>Survei Titik PJU <span id="pn"></span></h1><span class="sp"></span><span id="stt" class="chip"></span>
 <select id="pp"><option value="A4 landscape|281|168">A4 Landscape</option><option value="A4 portrait|194|252">A4 Portrait</option><option value="A3 landscape|404|258">A3 Landscape</option></select>
-<button id="bPrint" class="pri">🖨 Cetak</button><button id="bSet">⚙ Pengaturan</button></header>
+<button id="bPrint" class="pri">🖨 Cetak</button><button id="bPres">🖥 Presentasi</button><button id="bSet">⚙ Pengaturan</button></header>
 <aside id="side">
 <div class="tools"><button id="bAdd" class="pri">＋ Tambah titik</button><button id="bGps">📍 Saya</button><button id="bPin">📌 Di GPS</button></div>
+<div class="tools" style="grid-template-columns:1.6fr 1fr"><button id="bK">〰 Tarik kabel</button><button id="bUndo">↶ Urungkan</button></div>
 <input id="q" placeholder="Cari alamat / tempat lalu Enter">
 <div id="fm"></div>
 <div class="lh"><span>Daftar titik</span><small id="cnt"></small></div>
 <div id="ls"></div>
+<div class="lh"><span>Kabel jaringan</span><small id="ct"></small></div>
+<div id="cc"></div>
 </aside>
 <div id="ph"><h1 id="ph1"></h1></div>
 <div id="map"></div>
-<div id="pt"><h2>Daftar Titik PJU</h2><table id="tb"></table></div>
+<div id="pt"><h2>Daftar Titik PJU</h2><table id="tb"></table><div id="pc" style="margin-top:14px"><h2>Daftar Kabel Jaringan</h2><table id="tc"></table></div></div>
 </div>
 <dialog id="dg"><form method="dialog"><h3>Pengaturan</h3>
 <label>Nama proyek / lokasi survei<input id="sPj"></label>
@@ -74,42 +85,73 @@ dialog label{margin-bottom:10px}dialog h3{margin:0 0 12px}dialog menu{display:fl
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const $=i=>document.getElementById(i),K='pjuSurvey1';
-const FIELDS=[['jalan','Nama jalan / lokasi','txt'],['cat','Catatan','area']];
+const TIPE=['PJU Baru','PJU Lama','Titik Lama'],COL=[['#f5a524','#0f2a43'],['#2563eb','#fff'],['#475569','#fff']];
+const FIELDS=[['tipe','Jenis titik','sel',TIPE],['jalan','Nama jalan / lokasi','txt'],['cat','Catatan','area']];
 const HEAD=['No','Longitude','Latitude',...FIELDS.map(f=>f[1])];
-let S={proj:'',by:'',url:'',ts:0,pts:[]},sel=-1,add=0,gpsAdd=0,q=1,me,tm,pre;
+let S={proj:'',by:'',url:'',ts:0,pts:[],cables:[]},sel=-1,add=0,cm=0,cf=null,gpsAdd=0,q=1,me,tm,pre;
 try{Object.assign(S,JSON.parse(localStorage[K]))}catch(_){}
+S.cables=S.cables||[];S.pts.forEach(p=>p.tipe=p.tipe||TIPE[0]);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const rows=()=>S.pts.map((p,i)=>[i+1,p.lng,p.lat,...FIELDS.map(f=>p[f[0]]??'')]);
+const colr=p=>COL[Math.max(0,TIPE.indexOf(p.tipe))],nm=ll=>{const i=S.pts.findIndex(p=>L.latLng(p.lat,p.lng).distanceTo(ll)<3);return i<0?'-':i+1};
+const len=c=>c.v.reduce((n,v,i)=>i?n+L.latLng(c.v[i-1]).distanceTo(v):0,0);
+const tot=()=>Math.round(S.cables.reduce((n,c)=>n+len(c),0));
+const CHEAD=['No','Dari (No)','Ke (No)','Panjang (m)'];
+const crows=()=>S.cables.map((c,i)=>[i+1,nm(c.v[0]),nm(c.v[c.v.length-1]),Math.round(len(c))]);
+const normC=(cs,pts)=>(cs||[]).map(c=>{if(c.v)return c;const a=pts.find(p=>p.id==c.a),b=pts.find(p=>p.id==c.b);return a&&b?{id:c.id,v:[[a.lat,a.lng],[b.lat,b.lng]]}:null}).filter(Boolean);
+S.cables=normC(S.cables,S.pts);
 const st=(t,c='')=>{$('stt').textContent=t;$('stt').className='chip '+c};
 const persist=()=>localStorage[K]=JSON.stringify(S);
-const bounds=()=>L.latLngBounds(S.pts.map(p=>[p.lat,p.lng])),fit=()=>S.pts.length&&map.fitBounds(bounds().pad(.2),{maxZoom:18,animate:false});
+const bounds=()=>L.latLngBounds([...S.pts.map(p=>[p.lat,p.lng]),...S.cables.flatMap(c=>c.v)]),fit=()=>(S.pts.length||S.cables.length)&&map.fitBounds(bounds().pad(.2),{maxZoom:18,animate:false});
 
 /* ---- Peta ---- */
 const map=L.map('map',{maxZoom:20}).setView([-2.5,118],5);
 const esri=n=>L.tileLayer(`https://server.arcgisonline.com/ArcGIS/rest/services/${n}/MapServer/tile/{z}/{y}/{x}`,{maxZoom:20,maxNativeZoom:17,attribution:'Tiles © Esri'});
-const bl={'Peta Jalan':L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:20,maxNativeZoom:19,attribution:'© OpenStreetMap'}),
-'Terang':L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:20,subdomains:'abcd',attribution:'© OpenStreetMap © CARTO'}),
-'Satelit + Jalan':L.layerGroup([esri('World_Imagery'),esri('Reference/World_Transportation')]),'Satelit':esri('World_Imagery')};
+const bl={'Peta Jalan':L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:20,subdomains:'abcd',attribution:'© OpenStreetMap contributors © CARTO'}),
+'Peta Jalan (Esri)':esri('World_Street_Map'),'Satelit + Jalan':L.layerGroup([esri('World_Imagery'),esri('Reference/World_Transportation')]),'Satelit':esri('World_Imagery')};
 bl['Peta Jalan'].addTo(map);L.control.layers(bl).addTo(map);L.control.scale({imperial:false}).addTo(map);
 const G=L.layerGroup().addTo(map);
 const na=L.control({position:'topright'});na.onAdd=()=>{const d=L.DomUtil.create('div','na');d.innerHTML='<svg width="30" height="40" viewBox="0 0 34 44"><path d="M17 2 29 34 17 27 5 34Z" fill="#0f2a43"/><text x="17" y="43" text-anchor="middle" font-size="11" font-weight="700">U</text></svg>';return d};na.addTo(map);
+const lg=L.control({position:'bottomleft'});lg.onAdd=()=>{lg.d=L.DomUtil.create('div','lg');return lg.d};lg.addTo(map);
+function leg(){const ti=p=>Math.max(0,TIPE.indexOf(p.tipe)),u=TIPE.map((t,i)=>S.pts.some(p=>ti(p)==i)?`<div><i style="background:${COL[i][0]}"></i>${t}</div>`:'').join('')
++(S.cables.length?'<div><span class="kb"></span>Kabel jaringan</div>':'');
+lg.d.innerHTML=u?'<b>Keterangan</b>'+u:'';lg.d.style.display=u?'':'none'}
 
 /* ---- Titik ---- */
-const ic=(p,i)=>L.divIcon({className:'',iconSize:[30,36],iconAnchor:[15,36],html:`<div class="pin${i==sel?' on':''}"><b>${i+1}</b></div>`});
-function draw(){G.clearLayers();S.pts.forEach((p,i)=>L.marker([p.lat,p.lng],{draggable:true,icon:ic(p,i),zIndexOffset:i==sel?1000:0}).addTo(G)
-.on('click',()=>pick(i)).on('dragend',e=>{const c=e.target.getLatLng();p.lat=+c.lat.toFixed(6);p.lng=+c.lng.toFixed(6);save();setTimeout(()=>pick(i))}));ls()}
-function ls(){$('cnt').textContent=S.pts.length+' titik';$('ls').innerHTML=S.pts.map((p,i)=>`<div class="it${i==sel?' on':''}" data-i="${i}"><span class="bd">${i+1}</span><div><b>${esc(p.jalan)||'(tanpa nama)'}</b><small>${p.lng}, ${p.lat}</small></div></div>`).join('')||'<span class="hint">Belum ada titik.</span>'}
-function fm(){const p=S.pts[sel],el=$('fm');if(!p){el.innerHTML='<span class="hint">Aktifkan “＋ Tambah titik”, lalu klik peta untuk menandai lokasi PJU. Klik penanda atau daftar untuk mengedit; geser penanda untuk memindah.</span>';return}
+const ic=(p,i)=>{const c=colr(p),t=TIPE.indexOf(p.tipe)==2;return L.divIcon({className:'',iconSize:[30,36],iconAnchor:t?[15,15]:[15,36],html:`<div class="pin${t?' sq':''}${i==sel||p.id==cf?' on':''}" style="--c:${c[0]};--x:${c[1]}"><b>${i+1}</b></div>`})};
+function draw(){G.clearLayers();
+S.cables.forEach(c=>{L.polyline(c.v,{color:'#fff',weight:8,opacity:.85,interactive:false}).addTo(G);
+L.polyline(c.v,{color:'#dc2626',weight:4,interactive:false}).addTo(G).bindTooltip(Math.round(len(c))+' m',{permanent:true,direction:'center',className:'cl'})});
+if(cm&&cv.length){L.polyline(cv,{color:'#dc2626',weight:4,dashArray:'8 6',interactive:false}).addTo(G);cv.forEach(v=>L.circleMarker(v,{radius:5,color:'#fff',weight:2,fillColor:'#dc2626',fillOpacity:1,interactive:false}).addTo(G))}
+S.pts.forEach((p,i)=>L.marker([p.lat,p.lng],{draggable:!cm,icon:ic(p,i),zIndexOffset:i==sel?1000:0}).addTo(G)
+.on('click',()=>cm?cab(i):pick(i)).on('dragend',e=>{const c=e.target.getLatLng();p.lat=+c.lat.toFixed(6);p.lng=+c.lng.toFixed(6);save();setTimeout(()=>pick(i))}));ls();cls();leg()}
+function ls(){$('cnt').textContent=S.pts.length+' titik';$('ls').innerHTML=S.pts.map((p,i)=>`<div class="it${i==sel?' on':''}" data-i="${i}"><span class="bd" style="background:${colr(p)[0]};color:${colr(p)[1]}">${i+1}</span><div><b>${esc(p.jalan)||'(tanpa nama)'}</b><small>${esc(p.tipe)} · ${p.lng}, ${p.lat}</small></div></div>`).join('')||'<span class="hint">Belum ada titik.</span>'}
+function fm(){const p=S.pts[sel],el=$('fm');if(!p){el.innerHTML='<span class="hint">Ketuk “＋ Tambah titik”, lalu ketuk peta untuk menandai PJU dan pilih jenis titiknya. Untuk kabel pakai “〰 Kabel baru” atau “〰 Kabel lama”: ketuk titik asal, lalu titik tujuan.</span>';return}
 el.innerHTML=`<div class="lh" style="margin-bottom:8px"><span>No. ${sel+1}</span><a target="_blank" rel="noopener" href="https://www.google.com/maps?q=${p.lat},${p.lng}">Buka di Google Maps</a></div><div class="g"><label>Longitude<input value="${p.lng}" readonly></label><label>Latitude<input value="${p.lat}" readonly></label>`
-+FIELDS.map(([k,l,t,o])=>`<label class="${t=='txt'||t=='area'?'w':''}">${l}`+(t=='sel'?`<select data-k="${k}">${o.map(v=>`<option${v==p[k]?' selected':''}>${v}</option>`).join('')}</select>`:t=='area'?`<textarea data-k="${k}" rows="2">${esc(p[k])}</textarea>`:`<input data-k="${k}" type="${t=='num'?'number':'text'}" inputmode="${t=='num'?'decimal':'text'}" value="${esc(p[k])}">`)+'</label>').join('')
++FIELDS.map(([k,l,t,o])=>`<label class="w">${l}`+(t=='sel'?`<select data-k="${k}">${o.map(v=>`<option${v==p[k]?' selected':''}>${v}</option>`).join('')}</select>`:t=='area'?`<textarea data-k="${k}" rows="2">${esc(p[k])}</textarea>`:`<input data-k="${k}" type="${t=='num'?'number':'text'}" inputmode="${t=='num'?'decimal':'text'}" value="${esc(p[k])}">`)+'</label>').join('')
 +`<button class="dg" data-a="del">Hapus titik</button><button data-a="ok">Selesai</button></div>`}
 function pick(i){sel=i;draw();fm()}
 function addPt(ll){const v=S.pts.at(-1)||{},p={id:Date.now().toString(36),lat:+ll.lat.toFixed(6),lng:+ll.lng.toFixed(6),by:S.by,t:new Date().toISOString()};FIELDS.forEach(([k,,t,o])=>p[k]=t=='sel'?v[k]||o[0]:'');S.pts.push(p);save();pick(S.pts.length-1)}
-$('fm').oninput=e=>{const k=e.target.dataset.k;if(!k||sel<0)return;S.pts[sel][k]=e.target.value;save();if(k=='jenis')draw();else ls()};
-$('fm').onclick=e=>{const a=e.target.dataset.a;if(a=='del'&&confirm('Hapus titik ini?')){S.pts.splice(sel,1);sel=-1;save();draw();fm()}if(a=='ok'){sel=-1;draw();fm()}};
+$('fm').oninput=e=>{const k=e.target.dataset.k;if(!k||sel<0)return;S.pts[sel][k]=e.target.value;save();if(k=='tipe')draw();else ls()};
+$('fm').onclick=e=>{const a=e.target.dataset.a;if(a=='del'&&confirm('Hapus titik ini?')){{const id=S.pts[sel].id;S.cables=S.cables.filter(c=>c.a!=id&&c.b!=id)}S.pts.splice(sel,1);sel=-1;save();draw();fm()}if(a=='ok'){sel=-1;draw();fm()}};
 $('ls').onclick=e=>{const d=e.target.closest('.it');if(d){const i=+d.dataset.i;map.flyTo([S.pts[i].lat,S.pts[i].lng],Math.max(map.getZoom(),17));pick(i)}};
-map.on('click',e=>{if(add)addPt(e.latlng)});
-$('bAdd').onclick=()=>{add=!add;document.body.classList.toggle('adding',!!add);$('bAdd').classList.toggle('on',!!add);$('bAdd').textContent=add?'■ Selesai tambah':'＋ Tambah titik'};
+map.on('click',e=>{if(add)addPt(e.latlng);else if(cm)addV([e.latlng.lat,e.latlng.lng])});
+let cv=[];
+function fin(){if(cv.length>1){S.cables.push({id:Date.now().toString(36),v:cv});save()}cv=[]}
+function mode(m){if(cm&&m!='kabel')fin();add=m=='add';cm=m=='kabel'?1:0;document.body.classList.toggle('adding',add||!!cm);
+$('bAdd').classList.toggle('on',add);$('bAdd').textContent=add?'■ Selesai tambah':'＋ Tambah titik';
+$('bK').classList.toggle('on',!!cm);$('bK').textContent=cm?'■ Selesai kabel':'〰 Tarik kabel';
+$('tip').textContent=add?'Ketuk peta untuk menaruh titik':cm?'Ketuk peta atau titik PJU untuk membentuk jalur kabel, lalu tekan Selesai':'';draw()}
+$('bAdd').onclick=()=>mode(add?'':'add');$('bK').onclick=()=>mode(cm?'':'kabel');
+$('bUndo').onclick=()=>{if(cm&&cv.length){cv.pop();draw()}};
+function addV(ll){cv.push([+(+ll[0]).toFixed(6),+(+ll[1]).toFixed(6)]);draw()}
+function cab(i){addV([S.pts[i].lat,S.pts[i].lng])}
+function cls(){$('ct').textContent='Total '+tot()+' m';
+$('cc').innerHTML=S.cables.map((c,i)=>`<div class="it" data-c="${i}"><span class="kb"></span><div><b>Kabel ${i+1}</b><small>${Math.round(len(c))} m · ${c.v.length} titik jalur</small></div><button data-x="${i}" title="Hapus kabel">✕</button></div>`).join('')||'<span class="hint">Belum ada kabel.</span>'}
+$('cc').onclick=e=>{const x=e.target.dataset.x;if(x!=null){S.cables.splice(+x,1);save();draw();return}const d=e.target.closest('.it');if(d)map.fitBounds(S.cables[+d.dataset.c].v,{maxZoom:19,padding:[60,60]})};
+$('bPres').onclick=()=>{mode('');sel=-1;draw();fm();document.body.classList.add('pres');setTimeout(()=>map.invalidateSize(),80);const r=document.documentElement.requestFullscreen;r&&r.call(document.documentElement).catch(()=>{})};
+$('bX').onclick=()=>{document.body.classList.remove('pres');document.fullscreenElement&&document.exitFullscreen();setTimeout(()=>map.invalidateSize(),80)};
+document.onfullscreenchange=()=>{document.fullscreenElement||document.body.classList.contains('pres')&&$('bX').click()};
 
 /* ---- GPS & pencarian ---- */
 const loc=a=>{q=0;gpsAdd=a;map.locate({setView:true,maxZoom:19,enableHighAccuracy:true})};
@@ -120,8 +162,8 @@ $('q').onkeydown=async e=>{if(e.key!='Enter')return;try{const r=await(await fetc
 
 /* ---- Simpan: perangkat + Google Drive ---- */
 function save(){S.ts=Date.now();persist();st(S.url?'Menunggu sinkron…':'Tersimpan di perangkat');clearTimeout(tm);if(S.url)tm=setTimeout(push,1200)}
-async function push(){if(!S.url)return;st('Menyinkronkan…');try{await fetch(S.url,{method:'POST',body:JSON.stringify({ts:S.ts,proj:S.proj,by:S.by,pts:S.pts,head:HEAD,rows:rows()})});st('Tersimpan di Drive ✓','ok')}catch(e){st('Gagal sinkron (data aman di perangkat)','err')}}
-async function pull(){if(!S.url)return;st('Memuat dari Drive…');try{const d=await(await fetch(S.url)).json();if(d.ts>S.ts){Object.assign(S,{ts:d.ts,proj:d.proj||'',by:d.by||'',pts:d.pts||[]});persist();$('pn').textContent=S.proj;sel=-1;draw();fm();fit();st('Dimuat dari Drive ✓','ok')}else push()}catch(e){st('Drive tidak terhubung','err')}}
+async function push(){if(!S.url)return;st('Menyinkronkan…');try{await fetch(S.url,{method:'POST',body:JSON.stringify({ts:S.ts,proj:S.proj,by:S.by,pts:S.pts,cables:S.cables,head:HEAD,rows:rows(),chead:CHEAD,crows:crows()})});st('Tersimpan di Drive ✓','ok')}catch(e){st('Gagal sinkron (data aman di perangkat)','err')}}
+async function pull(){if(!S.url)return;st('Memuat dari Drive…');try{const d=await(await fetch(S.url)).json();if(d.ts>S.ts){Object.assign(S,{ts:d.ts,proj:d.proj||'',by:d.by||'',pts:d.pts||[],cables:normC(d.cables||S.cables,d.pts||[])});persist();$('pn').textContent=S.proj;sel=-1;draw();fm();fit();st('Dimuat dari Drive ✓','ok')}else push()}catch(e){st('Drive tidak terhubung','err')}}
 $('bSet').onclick=()=>{$('sPj').value=S.proj;$('sUrl').value=S.url;$('dg').showModal()};
 $('ok').onclick=()=>{S.proj=$('sPj').value;S.url=$('sUrl').value.trim();$('pn').textContent=S.proj;persist();st(S.url?'Drive diatur':'Tersimpan di perangkat');pull()};
 
@@ -129,12 +171,13 @@ $('ok').onclick=()=>{S.proj=$('sPj').value;S.url=$('sUrl').value.trim();$('pn').
 function layout(){const [sz,w,h]=$('pp').value.split('|'),css=document.documentElement.style;$('pg').textContent=`@page{size:${sz};margin:8mm}`;css.setProperty('--mw',w+'mm');css.setProperty('--mh',h+'mm');
 $('ph1').textContent=S.proj||'Survei Titik PJU Baru';
 $('tb').innerHTML='<thead><tr>'+HEAD.map(x=>`<th>${esc(x)}</th>`).join('')+'</tr></thead><tbody>'+rows().map(r=>'<tr>'+r.map(v=>`<td>${esc(v)}</td>`).join('')+'</tr>').join('')+'</tbody>';
-pre=[map.getCenter(),map.getZoom()];sel=-1;document.body.classList.add('pr');draw();fm();map.invalidateSize();fit()}
+$('pc').style.display=S.cables.length?'':'none';$('tc').innerHTML='<thead><tr>'+CHEAD.map(x=>`<th>${x}</th>`).join('')+'</tr></thead><tbody>'+crows().map(r=>'<tr>'+r.map(v=>`<td>${v}</td>`).join('')+'</tr>').join('')+`<tr><td colspan="3"><b>Total panjang kabel</b></td><td><b>${tot()}</b></td></tr></tbody>`;
+pre=[map.getCenter(),map.getZoom()];mode('');sel=-1;document.body.classList.add('pr');draw();fm();map.invalidateSize();fit()}
 function restore(){if(!document.body.classList.contains('pr'))return;document.body.classList.remove('pr');map.invalidateSize();pre&&map.setView(pre[0],pre[1],{animate:false});draw()}
 $('bPrint').onclick=()=>{layout();st('Menyiapkan peta untuk cetak…');setTimeout(()=>{print();st(S.url?'Tersimpan di Drive ✓':'Tersimpan di perangkat')},2000)};
 addEventListener('beforeprint',()=>{document.body.classList.contains('pr')||layout()});addEventListener('afterprint',restore);
 
 /* ---- Mulai ---- */
 $('pn').textContent=S.proj;st(S.url?'Drive terhubung':'Tersimpan di perangkat');draw();fm();
-S.pts.length?fit():map.locate({setView:true,maxZoom:16});pull();
+(S.pts.length||S.cables.length)?fit():map.locate({setView:true,maxZoom:16});pull();
 </script></body></html>
